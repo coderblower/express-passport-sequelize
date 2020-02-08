@@ -1,5 +1,5 @@
 
-module.exports = (app, passport) => {
+module.exports = (app, passport, users, bcrypt) => {
   app.get('/', checkAuthenticated, (req, res) => {
     res.render('index', { name: req.user.name })
   })
@@ -21,14 +21,15 @@ module.exports = (app, passport) => {
   app.post('/register', checkNotAuthenticated, async (req, res) => {
     try {
       const hashedPassword = await bcrypt.hash(req.body.password, 10)
-      users.push({
-        id: Date.now().toString(),
+     await users.create({
         name: req.body.name,
         email: req.body.email,
         password: hashedPassword
       })
       res.redirect('/login')
-    } catch {
+    } catch(e) {
+     console.log(e);
+     
       res.redirect('/register')
     }
   })
